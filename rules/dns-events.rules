@@ -1,0 +1,17 @@
+# Response (answer) we didn't see a Request for. Could be packet loss.
+alert dns any any -> any any (msg:"DNS未经请求的响应"; flow:to_client; app-layer-event:dns.unsollicited_response; classtype:protocol-command-decode; sid:3540001; rev:2;)
+# Malformed data in request. Malformed means length fields are wrong, etc.
+alert dns any any -> any any (msg:"DNS格式错误的请求数据"; flow:to_server; app-layer-event:dns.malformed_data; classtype:protocol-command-decode; sid:3540002; rev:2;)
+alert dns any any -> any any (msg:"DNS格式错误的响应数据"; flow:to_client; app-layer-event:dns.malformed_data; classtype:protocol-command-decode; sid:3540003; rev:2;)
+# Response flag set on to_server packet
+alert dns any any -> any any (msg:"不是DNS请求"; flow:to_server; app-layer-event:dns.not_a_request; classtype:protocol-command-decode; sid:3540004; rev:2;)
+# Response flag not set on to_client packet
+alert dns any any -> any any (msg:"不是DNS响应"; flow:to_client; app-layer-event:dns.not_a_response; classtype:protocol-command-decode; sid:3540005; rev:2;)
+# Z flag (reserved) not 0
+alert dns any any -> any any (msg:"DNS Z标志设置"; app-layer-event:dns.z_flag_set; classtype:protocol-command-decode; sid:3540006; rev:2;)
+# Request Flood Detected
+alert dns any any -> any any (msg:"检测到DNS请求泛洪"; flow:to_server; app-layer-event:dns.flooded; classtype:protocol-command-decode; sid:3540007; rev:2;)
+# Per-flow (state) memcap reached. Relates to the app-layer.protocols.dns.state-memcap setting.
+alert dns any any -> any any (msg:"DNS flow memcap reached"; flow:to_server; app-layer-event:dns.state_memcap_reached; classtype:protocol-command-decode; sid:3540008; rev:3;)
+#alert dns $HOME_NET any -> ![192.168.170.21,172.168.170.22] 53 (msg:"未授权DNS服务器"; dns_query; classtype:protocol-command-decode; sid:2999009; rev:1;)
+#alert dns $HOME_NET any -> any !53 (msg:"异常的DNS请求"; dns_query; classtype:protocol-command-decode; sid:2999010; rev:2;)

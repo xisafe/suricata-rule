@@ -1,0 +1,37 @@
+# HTTP
+#alert http any any -> any [443,10443] (msg:"443端口明文HTTP"; flow:to_server; app-layer-protocol:http; threshold: type limit, track by_src, seconds 3600, count 1; classtype:bad-connection; sid:2271019; rev:1;)
+alert tcp any any -> $HOME_NET ![443,80,8080,8090,8888,3000] (msg:"异常端口上的HTTP"; flow:to_server; app-layer-protocol:http; threshold: type limit, track by_src, seconds 60, count 1; classtype:Notice-event; sid:2271001; rev:1;)
+alert tcp any any -> $HOME_NET [80,8080,8090,8088,9090,3000] (msg:"TCP端口80上的非HTTP"; flow:to_server; app-layer-protocol:!http; threshold: type limit, track by_src, seconds 60, count 1; classtype:Notice-event; sid:2271002; rev:1;)
+
+# SSL
+alert tcp any any -> $HOME_NET ![80,443,465,587,10443,8100] (msg:"异常端口上的TLS"; flow:to_server; app-layer-protocol:tls; threshold: type limit, track by_src, seconds 60, count 1; classtype:Notice-event; sid:2271004; rev:1;)
+alert tcp any any -> $HOME_NET [443,465] (msg:"TLS端口上的非TLS"; flow:to_server; app-layer-protocol:!tls; threshold: type limit, track by_src, seconds 60, count 1; classtype:Notice-event; sid:2271003; rev:1;)
+#alert tcp any any -> any any (msg:"TLS端口上的非TLS"; flow:to_server; app-layer-protocol:!tls; threshold: type limit, track by_src, seconds 60, count 1; classtype:Notice-event; sid:2271003; rev:1;)
+
+# FTP
+alert tcp any any -> $HOME_NET ![20,21,6667] (msg:"异常TCP端口上的FTP"; flow:to_server; app-layer-protocol:ftp; threshold: type limit, track by_src, seconds 60, count 1; classtype:bad-connection; sid:2271005; rev:1;)
+alert tcp any any -> $HOME_NET [20,21] (msg:"TCP端口21上的非FTP"; flow:to_server; app-layer-protocol:!ftp; threshold: type limit, track by_src, seconds 60, count 1; classtype:bad-connection; sid:2271006; rev:1;)
+
+# SSH
+alert tcp any any -> $HOME_NET !22 (msg:"SSH在异常端口开启"; flow:to_server; app-layer-protocol:ssh; threshold: type limit, track by_src, seconds 60, count 1; classtype:bad-connection; sid:2271009; rev:1;)
+alert tcp any any -> $HOME_NET 22 (msg:"TCP端口22上的非SSH"; flow:to_server; app-layer-protocol:!ssh; threshold: type limit, track by_src, seconds 60, count 1; classtype:bad-connection; sid:2271010; rev:1;)
+
+alert tcp any any -> $HOME_NET !143 (msg:"IMAP在异常端口开启"; flow:to_server; app-layer-protocol:imap; threshold: type limit, track by_src, seconds 60, count 1; classtype:bad-connection; sid:2271011; rev:1;)
+alert tcp any any -> $HOME_NET 143 (msg:"TCP端口143上的非IMAP"; flow:to_server; app-layer-protocol:!imap; threshold: type limit, track by_src, seconds 60, count 1; classtype:bad-connection; sid:2271012; rev:1;)
+
+# SMB
+alert tcp any any -> $HOME_NET 139 (msg:"TCP端口139上的非SMB"; flow:to_server; app-layer-protocol:!smb; threshold: type limit, track by_src, seconds 60, count 1; classtype:bad-connection; sid:2271013; rev:1;)
+alert tcp any any -> $HOME_NET [80,8080] (msg:"检测到DCERPC通过端口tcp 80,8080"; flow:to_server; app-layer-protocol:dcerpc; threshold: type limit, track by_src, seconds 60, count 1; classtype:bad-connection; sid:2271014; rev:1;)
+
+# DNS
+alert tcp $HOME_NET any -> any !53 (msg:"异常端口上的DNS-TCP"; flow:to_server; app-layer-protocol:dns; threshold: type limit, track by_src, seconds 60, count 1; classtype:bad-connection; sid:2271015; rev:1;)
+
+alert tcp $HOME_NET any -> any 53 (msg:"TCP端口53上的非DNS-TCP"; flow:to_server; app-layer-protocol:!dns; threshold: type limit, track by_src, seconds 60, count 1; classtype:bad-connection; sid:2271016; rev:1;)
+
+alert udp $HOME_NET any -> any !53 (msg:"异常端口上的DNS-UDP"; flow:to_server; app-layer-protocol:dns; threshold: type limit, track by_src, seconds 60, count 1; classtype:bad-connection; sid:2271017; rev:1;)
+
+alert udp $HOME_NET any -> any 53 (msg:"UDP端口53上的非DNS-UDP"; flow:to_server; app-layer-protocol:!dns; threshold: type limit, track by_src, seconds 60, count 1; classtype:bad-connection; sid:2271018; rev:1;)
+
+# MODBUS
+#alert tcp any any -> any 502 (msg:"TCP端口502但不是MODBUS"; flow:to_server; app-layer-protocol:!modbus; threshold: type limit, track by_src, seconds 60, count 1; classtype:bad-connection; sid:2271019; rev:1;)
+#alert tcp any any -> any any (msg:"TCP端口502 MODBUS"; flow:to_server; app-layer-protocol:modbus; threshold: type limit, track by_src, seconds 60, count 1; classtype:bad-connection; sid:2271020; rev:1;)

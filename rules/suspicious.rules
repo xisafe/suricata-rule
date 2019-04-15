@@ -1,0 +1,12 @@
+alert udp any any -> any 53 (msg:"对可疑*.ws域名DNS查询"; content:"|01 00 00 01 00 00 00 00 00 00|"; depth:10; offset:2; content:"|02|ws|00|"; nocase; classtype:bad-unknown; sid:2500003; rev:1;)
+alert http any any -> any any (msg:"对可疑*.ws域名HTTP请求"; flow:established,to_server; content:".ws"; http_host; isdataat:!1,relative; classtype:bad-unknown; sid:2500004; rev:1;)
+alert udp any any -> any 53 (msg:"对可疑*.to域名DNS查询"; content:"|01 00 00 01 00 00 00 00 00 00|"; depth:10; offset:2; content:"|02|to|00|"; nocase; classtype:bad-unknown; sid:2500005; rev:1;)
+alert http any any -> any any (msg:"对可疑*.to域名HTTP请求"; flow:established,to_server; content:".to"; http_host; isdataat:!1,relative; classtype:bad-unknown; sid:2500006; rev:1;)
+alert http any any -> any any (msg:"对可疑*.onion.to域名HTTP请求"; flow:established,to_server; content:".onion.to"; http_host; isdataat:!1,relative; classtype:bad-unknown; sid:2500007; rev:1;)
+alert http any any -> any any (msg:"对可疑*.onion.city域名HTTP请求"; flow:established,to_server; content:".onion.city"; http_host; isdataat:!1,relative; classtype:bad-unknown; sid:2500008; rev:1;)
+alert http any any -> any any (msg:"对可疑*.onion.cab域名HTTP请求"; flow:established,to_server; content:".onion.cab"; http_host; isdataat:!1,relative; classtype:bad-unknown; sid:2500009; rev:1;)
+alert http any any -> any any (msg:"对可疑*.onion.direct域名HTTP请求"; flow:established,to_server; content:".onion.direct"; http_host; isdataat:!1,relative; classtype:bad-unknown; sid:2500010; rev:1;)
+alert http any any -> any any (msg:"对可疑*.onion.*域名HTTP请求"; flow:established,to_server; content:".onion."; http_host; isdataat:!1,relative; classtype:bad-unknown; sid:2500011; rev:1;)
+alert udp any any -> any 53 (msg:"对可疑*.onion域名DNS查询"; content:"|01 00 00 01 00 00 00 00 00 00|"; depth:10; offset:2; content:"|02|onion|00|"; nocase; classtype:bad-unknown; sid:2500012; rev:1;)
+alert tls any any -> any any (msg:"SSL会话可疑* onion.to"; tls.subject:"CN=*.onion.to, OU=Domain Control Validated"; classtype:bad-unknown; sid:2500013; rev:1;)
+

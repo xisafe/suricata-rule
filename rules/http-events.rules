@@ -1,0 +1,56 @@
+# HTTP event  rules
+#
+# SID's fall in the 2221000+ range. See http://doc.emergingthreats.net/bin/view/Main/SidAllocation
+#
+# These sigs fire at most once per HTTP transaction.
+#
+# A flowint http.anomaly.count is incremented for each match. By default it will be 0.
+#
+alert http any any -> any any (msg:"HTTP位置错误"; flow:established; app-layer-event:http.unknown_error; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221000; rev:1;)
+alert http any any -> any any (msg:"HTTP gzip解压缩失败"; flow:established; app-layer-event:http.gzip_decompression_failed; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221001; rev:1;)
+alert http any any -> any any (msg:"HTTP请求字段缺少冒号"; flow:established,to_server; app-layer-event:http.request_field_missing_colon; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221002; rev:1;)
+alert http any any -> any any (msg:"HTTP响应字段缺少冒号"; flow:established,to_client; app-layer-event:http.response_field_missing_colon; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221020; rev:1;)
+alert http any any -> any any (msg:"HTTP无效请求块长度"; flow:established,to_server; app-layer-event:http.invalid_request_chunk_len; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221003; rev:1;)
+alert http any any -> any any (msg:"HTTP无效响应块长度"; flow:established,to_client; app-layer-event:http.invalid_response_chunk_len; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221004; rev:1;)
+alert http any any -> any any (msg:"HTTP请求中无效传输编码值"; flow:established,to_server; app-layer-event:http.invalid_transfer_encoding_value_in_request; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221005; rev:1;)
+alert http any any -> any any (msg:"HTTP响应中无效传输编码值"; flow:established,to_client; app-layer-event:http.invalid_transfer_encoding_value_in_response; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221006; rev:1;)
+alert http any any -> any any (msg:"HTTP请求无效的content length字段"; flow:established,to_server; app-layer-event:http.invalid_content_length_field_in_request; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221007; rev:1;)
+alert http any any -> any any (msg:"HTTP响应无效的content length字段"; flow:established,to_client; app-layer-event:http.invalid_content_length_field_in_response; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221008; rev:1;)
+alert http any any -> any any (msg:"TTP状态100-Continue已出现"; flow:established,to_client; app-layer-event:http.100_continue_already_seen; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221009; rev:1;)
+alert http any any -> any any (msg:"HTTP无法匹配请求的响应"; flow:established,to_client; app-layer-event:http.unable_to_match_response_to_request; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221010; rev:1;)
+alert http any any -> any any (msg:"HTTP请求无效服务器端口"; flow:established,to_server; app-layer-event:http.invalid_server_port_in_request; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221011; rev:1;)
+alert http any any -> any any (msg:"HTTP无效的授权端口"; flow:established; app-layer-event:http.invalid_authority_port; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221012; rev:1;)
+alert http any any -> any any (msg:"HTTP请求header无效"; flow:established,to_server; app-layer-event:http.request_header_invalid; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221013; rev:1;)
+alert http any any -> any any (msg:"HTTP响应header无效"; flow:established,to_client; app-layer-event:http.response_header_invalid; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221021; rev:1;)
+alert http any any -> any any (msg:"HTTP缺少header字段"; flow:established,to_server; app-layer-event:http.missing_host_header; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221014; rev:1;)
+# Alert if hostname is both part of URL and Host header and they are not the same.
+alert http any any -> any any (msg:"HTTP Header模糊"; flow:established,to_server; app-layer-event:http.host_header_ambiguous; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221015; rev:1;)
+alert http any any -> any any (msg:"HTTP无效请求字段folding"; flow:established,to_server; app-layer-event:http.invalid_request_field_folding; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221016; rev:1;)
+alert http any any -> any any (msg:"HTTP响应请求字段folding"; flow:established,to_client; app-layer-event:http.invalid_response_field_folding; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221017; rev:1;)
+alert http any any -> any any (msg:"HTTP请求buff太长"; flow:established,to_server; app-layer-event:http.request_field_too_long; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221018; rev:1;)
+alert http any any -> any any (msg:"HTTP响应buff太长"; flow:established,to_client; app-layer-event:http.response_field_too_long; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221019; rev:1;)
+# Multipart parser detected generic error.
+alert http any any -> any any (msg:"HTTP多个通用错误"; flow:established,to_server; app-layer-event:http.multipart_generic_error; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221022; rev:1;)
+# Multipart header claiming a file to present, but no actual filedata available.
+alert http any any -> any any (msg:"HTTP多个字段无数据"; flow:established,to_server; app-layer-event:http.multipart_no_filedata; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221023; rev:1;)
+# Multipart header invalid.
+alert http any any -> any any (msg:"HTTP多个无效header"; flow:established,to_server; app-layer-event:http.multipart_invalid_header; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221024; rev:1;)
+# Warn when the port in the Host: header doesn't match the actual TCP Server port.
+alert http any any -> any any (msg:"HTTP请求服务器端口与TCP端口不匹配"; flow:established,to_server; app-layer-event:http.request_server_port_tcp_port_mismatch; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221026; rev:1;)
+# Host part of URI is invalid
+alert http any any -> any any (msg:"URI的HTTP主机无效"; flow:established,to_server; app-layer-event:http.request_uri_host_invalid; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221027; rev:1;)
+# Host header is invalid
+alert http any any -> any any (msg:"HTTP host无效"; flow:established,to_server; app-layer-event:http.request_header_host_invalid; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221028; rev:1;)
+# URI is terminated by non-compliant characters. RFC allows for space (0x20), but many implementations permit others like tab and more.
+alert http any any -> any any (msg:"HTTP URI由不合规的字符终止"; flow:established,to_server; app-layer-event:http.uri_delim_non_compliant; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221029; rev:1;)
+# Method is terminated by non-compliant characters. RFC allows for space (0x20), but many implementations permit others like tab and more.
+alert http any any -> any any (msg:"HTTP METHOD由不合规的字符终止"; flow:established,to_server; app-layer-event:http.method_delim_non_compliant; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221030; rev:1;)
+# Request line started with whitespace
+alert http any any -> any any (msg:"带有前导空格的HTTP请求行"; flow:established,to_server; app-layer-event:http.request_line_leading_whitespace; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221031; rev:1;)
+
+
+alert http any any -> any any (msg:"HTTP请求太多编码层"; flow:established,to_server; app-layer-event:http.too_many_encoding_layers; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221032; rev:1;)
+alert http any any -> any any (msg:"HTTP请求异常Content-Encoding标头"; flow:established,to_server; app-layer-event:http.abnormal_ce_header; flowint:http.anomaly.count,+,1; classtype:protocol-command-decode; sid:2221033; rev:1;)
+
+# next sid 2221034
+
