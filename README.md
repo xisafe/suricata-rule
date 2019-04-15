@@ -1,5 +1,4 @@
 # suricata-rule
-![image](https://user-images.githubusercontent.com/29724312/56107356-5c412c00-5f78-11e9-8c0e-e43b6129665d.png)
 suricata IDS的规则，测试在用的，部分自写的规则视情况放出。
 规则如下
  - myself.rules 目前没有放出，主要是识别木马
@@ -24,4 +23,4 @@ suricata IDS的规则，测试在用的，部分自写的规则视情况放出�
  - tls-events.rules     # available in suricata sources under rules dir
  - app-layer-events.rules
  - decoder-events.rules
-
+![image](https://user-images.githubusercontent.com/29724312/56107356-5c412c00-5f78-11e9-8c0e-e43b6129665d.png)
